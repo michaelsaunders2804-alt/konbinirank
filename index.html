@@ -157,6 +157,7 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
 .rc-val.unrated { font-size:13px; color:#C0BCDC; font-family:'DM Sans',sans-serif; font-weight:600; }
 .rc-stars { font-size:10px; color:var(--gold); letter-spacing:-1px; }
 .rc-votes { font-size:9px; color:var(--muted); font-weight:600; }
+.elite-score { color:#E8212B !important; font-weight:900; }
 
 .heart-btn { width:28px; height:28px; border-radius:50%; background:var(--off); border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:12px; transition:all 0.15s; flex-shrink:0; align-self:center; }
 .heart-btn:hover { background:#FFE8F0; border-color:#FFB0C8; }
@@ -647,7 +648,7 @@ function renderTrending() {
       ${photoHtml}
       <div class="mini-name">${item.name_en}</div>
       <div class="mini-row">
-        <span class="${item.vote_count > 0 ? 'mini-score' : 'mini-score unrated'}">${item.vote_count > 0 ? item.score_avg : 'Unrated'}</span>
+        <span class="${item.vote_count > 0 ? 'mini-score' + (parseFloat(item.score_avg) >= 9.0 ? ' elite-score' : '') : 'mini-score unrated'}">${item.vote_count > 0 ? item.score_avg : 'Unrated'}</span>
         <span class="trend-new">NEW</span>
       </div>
     </div>`;
@@ -681,8 +682,9 @@ function renderRankCard(item, index) {
   const numHtml = index < 3
     ? `<div class="rc-num">${index + 1}</div>`
     : `<div class="rc-num-plain">${index + 1}</div>`;
+  const isElite = item.vote_count > 0 && parseFloat(item.score_avg) >= 9.0;
   const scoreHtml = item.vote_count > 0
-    ? `<span class="rc-val">${item.score_avg}</span><span class="rc-stars">${'★'.repeat(Math.round(item.score_avg/2))}</span><span class="rc-votes">${item.vote_count} votes</span>`
+    ? `<span class="rc-val${isElite ? ' elite-score' : ''}">${item.score_avg}</span><span class="rc-stars">${'★'.repeat(Math.round(item.score_avg/2))}</span>`
     : `<span class="rc-val unrated">Unrated</span><span class="rc-votes">Be first!</span>`;
   const tags = (item.tags || []).slice(0, 2).map(t => `<span class="tag t-must">${t}</span>`).join('');
   const avail = item.available_at || ['familymart'];
