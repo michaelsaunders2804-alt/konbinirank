@@ -339,7 +339,7 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
 <!-- CATEGORY -->
 <div class="cat-wrap">
   <div class="chips">
-    <div class="chip on" onclick="filterCat('top', this)">🏆 Top Ranked</div>
+    <div class="chip on" onclick="filterCat('top', this)">🏆 Top 10</div>
     <div class="chip" onclick="filterCat('ice-cream', this)">🍦 Ice Cream</div>
     <div class="chip" onclick="filterCat('onigiri', this)">🍙 Onigiri</div>
     <div class="chip" onclick="filterCat('bread', this)">🍞 Bread</div>
@@ -358,7 +358,7 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
   <!-- TOP RANKED -->
   <div id="top-ranked-section">
   <div class="sec-hdr">
-    <h2 class="sec-title">🏆 Top Ranked</h2>
+    <h2 class="sec-title">🏆 Top 10</h2>
     <a class="see-all" onclick="filterCat('all', null)">See all →</a>
   </div>
   <div class="rank-list" id="top-ranked">
@@ -626,7 +626,7 @@ async function loadItems() {
 
 // ── RENDER TOP RANKED ──
 function renderTopRanked() {
-  const top = allItems.filter(i => i.vote_count > 0).slice(0, 5);
+  const top = allItems.filter(i => i.vote_count > 0).slice(0, 10);
   const container = document.getElementById('top-ranked');
   if (!top.length) { container.innerHTML = '<p style="color:var(--muted);font-size:13px;">No votes yet — be the first to vote!</p>'; return; }
   container.innerHTML = top.map((item, i) => renderRankCard(item, i)).join('');
