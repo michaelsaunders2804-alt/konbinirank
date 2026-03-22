@@ -470,8 +470,21 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
       <input class="email-input" id="email-input" type="email" placeholder="your@email.com">
       <input class="email-input" id="password-input" type="password" placeholder="Password (min 6 characters)">
       <button class="auth-btn" onclick="signInEmail()" style="background:var(--navy);color:#fff;border-color:var(--navy);">Sign In / Create Account</button>
-      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px;">By signing in you agree to our <a href="/privacy" style="color:var(--navy-light);">Privacy Policy</a></p>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px;"><a onclick="showForgotPassword()" style="color:var(--navy-light);cursor:pointer;font-weight:700;">Forgot password?</a></p>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:6px;">By signing in you agree to our <a href="/privacy" style="color:var(--navy-light);">Privacy Policy</a></p>
     </div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div class="modal-overlay" id="forgot-modal">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" onclick="hideModal('forgot-modal')">×</button>
+    <div class="modal-title">Reset Password</div>
+    <div class="modal-sub" style="margin-bottom:20px;">Enter your email and we'll send you a reset link.</div>
+    <input class="email-input" id="reset-email" type="email" placeholder="your@email.com">
+    <button class="auth-btn" onclick="sendResetEmail()" style="background:var(--navy);color:#fff;border-color:var(--navy);">Send Reset Link</button>
+    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px;"><a onclick="hideModal('forgot-modal');showAuthModal();" style="color:var(--navy-light);cursor:pointer;">Back to sign in</a></p>
   </div>
 </div>
 
@@ -918,6 +931,26 @@ async function signInEmail() {
 async function signOut() {
   await sb.auth.signOut();
   showToast('Signed out');
+}
+
+// ── FORGOT PASSWORD ──
+function showForgotPassword() {
+  hideModal('auth-modal');
+  showModal('forgot-modal');
+}
+
+async function sendResetEmail() {
+  const email = document.getElementById('reset-email').value.trim();
+  if (!email) { showToast('Please enter your email'); return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://konbinirank.com'
+  });
+  if (error) {
+    showToast('Something went wrong. Try again.');
+    return;
+  }
+  showToast('Reset link sent! Check your email. 📧');
+  hideModal('forgot-modal');
 }
 
 // ── MODAL HELPERS ──
