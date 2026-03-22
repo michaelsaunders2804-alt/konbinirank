@@ -648,7 +648,7 @@ function renderTrending() {
       ${photoHtml}
       <div class="mini-name">${item.name_en}</div>
       <div class="mini-row">
-        <span class="${item.vote_count > 0 ? 'mini-score' + (parseFloat(item.score_avg) >= 9.0 ? ' elite-score' : '') : 'mini-score unrated'}">${item.vote_count > 0 ? item.score_avg : 'Unrated'}</span>
+        <span class="${item.vote_count > 0 ? 'mini-score' + (parseFloat(item.score_avg) >= 9.0 ? ' elite-score' : '') : 'mini-score unrated'}">${item.vote_count > 0 ? parseFloat(item.score_avg).toFixed(1) : 'Unrated'}</span>
         <span class="trend-new">NEW</span>
       </div>
     </div>`;
@@ -684,7 +684,7 @@ function renderRankCard(item, index) {
     : `<div class="rc-num-plain">${index + 1}</div>`;
   const isElite = item.vote_count > 0 && parseFloat(item.score_avg) >= 9.0;
   const scoreHtml = item.vote_count > 0
-    ? `<span class="rc-val${isElite ? ' elite-score' : ''}">${item.score_avg}</span><span class="rc-stars">${'★'.repeat(Math.round(item.score_avg/2))}</span>`
+    ? `<span class="rc-val${isElite ? ' elite-score' : ''}">${parseFloat(item.score_avg).toFixed(1)}</span><span class="rc-stars">${'★'.repeat(Math.round(item.score_avg/2))}</span>`
     : `<span class="rc-val unrated">Unrated</span><span class="rc-votes">Be first!</span>`;
   const tags = (item.tags || []).slice(0, 2).map(t => `<span class="tag t-must">${t}</span>`).join('');
   const avail = item.available_at || ['familymart'];
@@ -840,7 +840,7 @@ function showVoteModal(item) {
   document.getElementById('vote-item-name').textContent = item.name_en;
   document.getElementById('vote-item-jp').textContent = item.name_jp;
   const scoreEl = document.getElementById('vote-current-score');
-  scoreEl.textContent = item.vote_count > 0 ? `Community score: ${item.score_avg}/10 (${item.vote_count} votes)` : 'No votes yet — be the first!';
+  scoreEl.textContent = item.vote_count > 0 ? `Community score: ${parseFloat(item.score_avg).toFixed(1)}/10 (${item.vote_count} votes)` : 'No votes yet — be the first!';
   document.querySelectorAll('.vote-star').forEach(s => s.classList.remove('lit'));
   const btn = document.getElementById('vote-submit-btn');
   btn.disabled = true;
