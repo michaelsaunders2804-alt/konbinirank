@@ -648,6 +648,13 @@ function renderTrending() {
 // ── RENDER ALL ITEMS ──
 function renderAllItems(items = null) {
   let list = items || allItems;
+
+  // Apply chain filter
+  if (currentChain && currentChain !== 'all') {
+    list = list.filter(i => (i.available_at || ['familymart']).includes(currentChain));
+  }
+
+  // Apply category filter
   if (currentCategory === 'seasonal') {
     list = list.filter(i => i.status === 'seasonal' || i.status === 'limited_collab');
   } else if (currentCategory !== 'all' && currentCategory !== 'top') {
@@ -729,22 +736,29 @@ function filterChain(chain, el) {
   el.classList.add('on');
 
   if (chain === 'all') {
+    // Reset to top ranked view
     filterCat('top', document.querySelector('.chip'));
   } else {
-    const topSection = document.getElementById('top-ranked-section');
-    const tokyoSection = document.getElementById('tokyo-section');
-    const trendingSection = document.getElementById('trending-section');
-    const allSection = document.getElementById('all-section');
-    topSection.style.display = 'none';
-    tokyoSection.style.display = 'none';
-    trendingSection.style.display = 'none';
-    allSection.style.display = 'block';
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    // If currently in top view, switch to showing all items for this chain
+    if (currentCategory === 'top') {
+      const topSection = document.getElementById('top-ranked-section');
+      const tokyoSection = document.getElementById('tokyo-section');
+      const trendingSection = document.getElementById('trending-section');
+      const allSection = document.getElementById('all-section');
+      topSection.style.display = 'none';
+      tokyoSection.style.display = 'none';
+      trendingSection.style.display = 'none';
+      allSection.style.display = 'block';
+      currentCategory = 'all';
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    }
+    // Re-render with both chain + category filters
     const chainNames = { familymart: 'FamilyMart', lawson: 'Lawson', '7eleven': '7-Eleven' };
-    document.getElementById('list-title').textContent = chainNames[chain] || chain;
-    const filtered = allItems.filter(i => (i.available_at || ['familymart']).includes(chain));
-    document.getElementById('list-count').textContent = filtered.length + ' items';
-    document.getElementById('all-items').innerHTML = filtered.map((item, i) => renderRankCard(item, i)).join('');
+    const catTitle = currentCategory !== 'all' && currentCategory !== 'top'
+      ? ' — ' + currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1).replace('-', ' ')
+      : '';
+    document.getElementById('list-title').textContent = chainNames[chain] + catTitle;
+    renderAllItems();
   }
 }
 
