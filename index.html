@@ -117,7 +117,6 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
   background:#fff; border-radius:16px; padding:14px;
   display:flex; align-items:center; gap:12px;
   border:2px solid var(--border); cursor:pointer; transition:all 0.15s;
-  position:relative;
 }
 .rc:hover { border-color:var(--navy-light); transform:translateY(-1px); box-shadow:0 6px 20px rgba(46,42,114,0.1); }
 .rc.gold { border-left:4px solid var(--gold); }
@@ -153,13 +152,13 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
 .cb-lw { background:#EEF8FF; border-color:#B0DCFF; }
 .cb-se { background:#EDFFF4; border-color:#A0E8C0; }
 
-.rc-score { display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
+.rc-score { display:flex; flex-direction:column; align-items:flex-end; gap:2px; flex-shrink:0; margin-right:4px; }
 .rc-val { font-family:'Fraunces',serif; font-size:22px; font-weight:900; color:var(--ink); line-height:1; }
 .rc-val.unrated { font-size:13px; color:#C0BCDC; font-family:'DM Sans',sans-serif; font-weight:600; }
 .rc-stars { font-size:10px; color:var(--gold); letter-spacing:-1px; }
 .rc-votes { font-size:9px; color:var(--muted); font-weight:600; }
 
-.heart-btn { position:absolute; bottom:10px; right:10px; width:24px; height:24px; border-radius:50%; background:var(--off); border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:11px; transition:all 0.15s; flex-shrink:0; }
+.heart-btn { width:28px; height:28px; border-radius:50%; background:var(--off); border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:12px; transition:all 0.15s; flex-shrink:0; align-self:center; }
 .heart-btn:hover { background:#FFE8F0; border-color:#FFB0C8; }
 .heart-btn.saved { background:#FFE8F0; border-color:#FFB0C8; }
 
@@ -329,8 +328,8 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
 <!-- CHAIN FILTER -->
 <div class="chain-wrap">
   <div class="zone-lbl">Chain</div>
-  <div class="chain-chips"><div class="chain-chip" onclick="filterChain('all', this)">All Chains</div>
-    <div class="chain-chip on" onclick="filterChain('familymart', this)"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#00A654;margin-right:5px;vertical-align:middle;"></span>FamilyMart</div>
+  <div class="chain-chips"><div class="chain-chip on" onclick="filterChain('all', this)">All Chains</div>
+    <div class="chain-chip" onclick="filterChain('familymart', this)"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#00A654;margin-right:5px;vertical-align:middle;"></span>FamilyMart</div>
     <div class="chain-chip" onclick="filterChain('lawson', this)"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#0066CC;margin-right:5px;vertical-align:middle;"></span>Lawson</div>
     <div class="chain-chip" onclick="filterChain('7eleven', this)"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#E0141D;margin-right:5px;vertical-align:middle;"></span>7-Eleven</div>
   </div>
@@ -692,8 +691,8 @@ function renderRankCard(item, index) {
         <div class="rc-tags">${tags}</div>
         ${chainBadges}
       </div>
-      <div class="rc-score">${scoreHtml}</div>
       <div class="heart-btn ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation();toggleWishlist('${item.id}', this)">${isSaved ? '❤️' : '🤍'}</div>
+      <div class="rc-score">${scoreHtml}</div>
     </div>`;
 }
 
@@ -728,7 +727,25 @@ function filterChain(chain, el) {
   currentChain = chain;
   document.querySelectorAll('.chain-chip').forEach(c => c.classList.remove('on'));
   el.classList.add('on');
-  renderAllItems();
+
+  if (chain === 'all') {
+    filterCat('top', document.querySelector('.chip'));
+  } else {
+    const topSection = document.getElementById('top-ranked-section');
+    const tokyoSection = document.getElementById('tokyo-section');
+    const trendingSection = document.getElementById('trending-section');
+    const allSection = document.getElementById('all-section');
+    topSection.style.display = 'none';
+    tokyoSection.style.display = 'none';
+    trendingSection.style.display = 'none';
+    allSection.style.display = 'block';
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    const chainNames = { familymart: 'FamilyMart', lawson: 'Lawson', '7eleven': '7-Eleven' };
+    document.getElementById('list-title').textContent = chainNames[chain] || chain;
+    const filtered = allItems.filter(i => (i.available_at || ['familymart']).includes(chain));
+    document.getElementById('list-count').textContent = filtered.length + ' items';
+    document.getElementById('all-items').innerHTML = filtered.map((item, i) => renderRankCard(item, i)).join('');
+  }
 }
 
 function scrollToList() {
