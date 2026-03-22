@@ -159,7 +159,7 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
 .rc-stars { font-size:10px; color:var(--gold); letter-spacing:-1px; }
 .rc-votes { font-size:9px; color:var(--muted); font-weight:600; }
 
-.heart-btn { position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:50%; background:var(--off); border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px; transition:all 0.15s; flex-shrink:0; }
+.heart-btn { position:absolute; bottom:10px; right:10px; width:24px; height:24px; border-radius:50%; background:var(--off); border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:11px; transition:all 0.15s; flex-shrink:0; }
 .heart-btn:hover { background:#FFE8F0; border-color:#FFB0C8; }
 .heart-btn.saved { background:#FFE8F0; border-color:#FFB0C8; }
 
@@ -338,9 +338,8 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
 
 <!-- CATEGORY -->
 <div class="cat-wrap">
-  <div class="zone-lbl" style="padding:0 20px;">Category</div>
   <div class="chips">
-    <div class="chip on" onclick="filterCat('all', this)">🍱 All</div>
+    <div class="chip on" onclick="filterCat('top', this)">🏆 Top Ranked</div>
     <div class="chip" onclick="filterCat('ice-cream', this)">🍦 Ice Cream</div>
     <div class="chip" onclick="filterCat('onigiri', this)">🍙 Onigiri</div>
     <div class="chip" onclick="filterCat('bread', this)">🍞 Bread</div>
@@ -349,23 +348,15 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
     <div class="chip" onclick="filterCat('drinks', this)">🥤 Drinks</div>
     <div class="chip" onclick="filterCat('clothing', this)">👕 Clothing</div>
     <div class="chip" onclick="filterCat('snacks', this)">🍫 Snacks</div>
+    <div class="chip" onclick="filterCat('seasonal', this)">🌸 Seasonal</div>
   </div>
 </div>
 
 <!-- CONTENT -->
 <div class="content">
 
-  <!-- SEASONAL BANNER -->
-  <div class="s-banner">
-    <div>
-      <p class="s-kicker">Seasonal Items</p>
-      <p class="s-title">Limited drops<br>updated weekly 🌸</p>
-      <button class="s-btn" onclick="filterCat('seasonal', null)">See seasonal →</button>
-    </div>
-    <span class="s-emo">🌸</span>
-  </div>
-
   <!-- TOP RANKED -->
+  <div id="top-ranked-section">
   <div class="sec-hdr">
     <h2 class="sec-title">🏆 Top Ranked</h2>
     <a class="see-all" onclick="filterCat('all', null)">See all →</a>
@@ -375,18 +366,22 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
     <div class="loading-card"></div>
     <div class="loading-card"></div>
   </div>
+  </div>
 
-  <!-- FREEZER -->
-  <div class="freezer" onclick="filterCat('ice-cream', document.querySelector('.chip:nth-child(2)'))">
+  <!-- TOKYO EXPERIENCES -->
+  <div id="tokyo-section">
+  <div class="tokyo-card" onclick="window.open('https://affiliate.klook.com/redirect?aid=116328&aff_adid=1240230&k_site=https%3A%2F%2Fwww.klook.com%2Fen-US%2Fcity%2F28-tokyo-things-to-do%2F','_blank')">
     <div>
-      <p class="freezer-tag">🍦 Full Ice Cream Coverage</p>
-      <p class="freezer-title">Open the Freezer Case</p>
-      <p class="freezer-sub">Every ice cream at FamilyMart. Vote on your favorites.</p>
+      <p class="tokyo-kicker">Powered by Klook</p>
+      <p class="tokyo-title">Tokyo experiences worth booking</p>
+      <button class="tokyo-btn">Explore Tokyo →</button>
     </div>
-    <div class="freezer-badge">🍦</div>
+    <span class="tokyo-emo">🗼</span>
+  </div>
   </div>
 
   <!-- TRENDING -->
+  <div id="trending-section">
   <div class="sec-hdr">
     <h2 class="sec-title">🔥 Recently Added</h2>
     <a class="see-all">See all →</a>
@@ -396,22 +391,15 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
     <div class="loading-card" style="width:120px;height:120px;border-radius:14px;flex-shrink:0;"></div>
     <div class="loading-card" style="width:120px;height:120px;border-radius:14px;flex-shrink:0;"></div>
   </div>
+  </div>
 
   <!-- ALL ITEMS -->
-  <div class="sec-hdr" style="margin-top:28px;">
+  <div id="all-section" style="display:none;">
+  <div class="sec-hdr" style="margin-top:4px;">
     <h2 class="sec-title" id="list-title">All Items</h2>
-    <span class="sec-title" id="list-count" style="font-size:13px;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:600;"></span>
+    <span id="list-count" style="font-size:13px;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:600;"></span>
   </div>
   <div class="rank-list" id="all-items"></div>
-
-  <!-- TOKYO -->
-  <div class="tokyo-card" onclick="window.open('https://affiliate.klook.com/redirect?aid=116328&aff_adid=1240230&k_site=https%3A%2F%2Fwww.klook.com%2Fen-US%2Fcity%2F6-tokyo-things-to-do%2F','_blank')">
-    <div>
-      <p class="tokyo-kicker">Powered by Klook</p>
-      <p class="tokyo-title">Tokyo experiences worth booking</p>
-      <button class="tokyo-btn">Explore Tokyo →</button>
-    </div>
-    <span class="tokyo-emo">🗼</span>
   </div>
 
   <!-- TIP JAR -->
@@ -439,7 +427,7 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
     <div class="disclaimer-title">Independent Guide</div>
     <div class="disclaimer-text">
       KonbiniRank is an independent fan guide. Not affiliated with, endorsed by, or sponsored by FamilyMart, Lawson, 7-Eleven Japan, or any convenience store brand. Rankings reflect community votes only.<br><br>
-      Tokyo experience links are powered by <a href="https://affiliate.klook.com/redirect?aid=116328" target="_blank">Klook</a> (affiliate partner). KonbiniRank may earn a small commission at no extra cost to you.
+      Tokyo experience links are powered by <a href="https://affiliate.klook.com/redirect?aid=116328&aff_adid=1240230&k_site=https%3A%2F%2Fwww.klook.com%2Fen-US%2Fcity%2F28-tokyo-things-to-do%2F" target="_blank">Klook</a> (affiliate partner). KonbiniRank may earn a small commission at no extra cost to you.
     </div>
   </div>
 
@@ -549,7 +537,7 @@ const sb = createClient(
 
 // ── STATE ──
 let currentUser = null;
-let currentCategory = 'all';
+let currentCategory = 'top';
 let currentChain = 'all';
 let allItems = [];
 let wishlist = JSON.parse(localStorage.getItem('kr_wishlist') || '[]');
@@ -661,7 +649,11 @@ function renderTrending() {
 // ── RENDER ALL ITEMS ──
 function renderAllItems(items = null) {
   let list = items || allItems;
-  if (currentCategory !== 'all') list = list.filter(i => i.category === currentCategory);
+  if (currentCategory === 'seasonal') {
+    list = list.filter(i => i.status === 'seasonal' || i.status === 'limited_collab');
+  } else if (currentCategory !== 'all' && currentCategory !== 'top') {
+    list = list.filter(i => i.category === currentCategory);
+  }
   const container = document.getElementById('all-items');
   document.getElementById('list-count').textContent = `${list.length} items`;
   if (!list.length) { container.innerHTML = '<p style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">No items found.</p>'; return; }
@@ -710,10 +702,26 @@ function filterCat(cat, el) {
   currentCategory = cat;
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
   if (el) el.classList.add('on');
-  const title = cat === 'all' ? 'All Items' : cat.charAt(0).toUpperCase() + cat.slice(1).replace('-', ' ');
-  document.getElementById('list-title').textContent = title;
-  renderAllItems();
-  scrollToList();
+
+  const topSection = document.getElementById('top-ranked-section');
+  const tokyoSection = document.getElementById('tokyo-section');
+  const trendingSection = document.getElementById('trending-section');
+  const allSection = document.getElementById('all-section');
+
+  if (cat === 'top') {
+    topSection.style.display = 'block';
+    tokyoSection.style.display = 'block';
+    trendingSection.style.display = 'block';
+    allSection.style.display = 'none';
+  } else {
+    topSection.style.display = 'none';
+    tokyoSection.style.display = 'none';
+    trendingSection.style.display = 'none';
+    allSection.style.display = 'block';
+    const title = cat.charAt(0).toUpperCase() + cat.slice(1).replace('-', ' ');
+    document.getElementById('list-title').textContent = title;
+    renderAllItems();
+  }
 }
 
 function filterChain(chain, el) {
