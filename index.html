@@ -294,6 +294,7 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
     </div>
   </div>
   <div class="hdr-right">
+    <a href="/blog.html" class="hdr-pill" style="cursor:pointer;text-decoration:none;">Blog</a>
     <div id="auth-area">
       <span class="hdr-pill" onclick="showAuthModal()" style="cursor:pointer;">Sign In</span>
     </div>
@@ -626,7 +627,7 @@ async function loadItems() {
 
 // ── RENDER TOP RANKED ──
 function renderTopRanked() {
-  const top = allItems.filter(i => i.vote_count > 0).slice(0, 10);
+  const top = allItems.filter(i => i.vote_count >= 5).slice(0, 10);
   const container = document.getElementById('top-ranked');
   if (!top.length) { container.innerHTML = '<p style="color:var(--muted);font-size:13px;">No votes yet — be the first to vote!</p>'; return; }
   container.innerHTML = top.map((item, i) => renderRankCard(item, i)).join('');
@@ -648,7 +649,7 @@ function renderTrending() {
       ${photoHtml}
       <div class="mini-name">${item.name_en}</div>
       <div class="mini-row">
-        <span class="${item.vote_count > 0 ? 'mini-score' + (parseFloat(item.score_avg) >= 9.0 ? ' elite-score' : '') : 'mini-score unrated'}">${item.vote_count > 0 ? parseFloat(item.score_avg).toFixed(1) : 'Unrated'}</span>
+        <span class="${item.vote_count >= 5 ? 'mini-score' + (parseFloat(item.score_avg) >= 9.0 ? ' elite-score' : '') : 'mini-score unrated'}">${item.vote_count >= 5 ? parseFloat(item.score_avg).toFixed(1) : 'Unrated'}</span>
         <span class="trend-new">NEW</span>
       </div>
     </div>`;
@@ -670,6 +671,17 @@ function renderAllItems(items = null) {
   } else if (currentCategory !== 'all' && currentCategory !== 'top') {
     list = list.filter(i => i.category === currentCategory);
   }
+
+  // Sort: rated items (5+ votes) by score desc, unrated to bottom
+  list = [...list].sort((a, b) => {
+    const aRated = a.vote_count >= 5;
+    const bRated = b.vote_count >= 5;
+    if (aRated && !bRated) return -1;
+    if (!aRated && bRated) return 1;
+    if (aRated && bRated) return parseFloat(b.score_avg) - parseFloat(a.score_avg);
+    return 0;
+  });
+
   const container = document.getElementById('all-items');
   document.getElementById('list-count').textContent = `${list.length} items`;
   if (!list.length) { container.innerHTML = '<p style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">No items found.</p>'; return; }
@@ -682,8 +694,9 @@ function renderRankCard(item, index) {
   const numHtml = index < 3
     ? `<div class="rc-num">${index + 1}</div>`
     : `<div class="rc-num-plain">${index + 1}</div>`;
-  const isElite = item.vote_count > 0 && parseFloat(item.score_avg) >= 9.0;
-  const scoreHtml = item.vote_count > 0
+  const hasScore = item.vote_count >= 5;
+  const isElite = hasScore && parseFloat(item.score_avg) >= 9.0;
+  const scoreHtml = hasScore
     ? `<span class="rc-val${isElite ? ' elite-score' : ''}">${parseFloat(item.score_avg).toFixed(1)}</span><span class="rc-stars">${'★'.repeat(Math.round(item.score_avg/2))}</span>`
     : `<span class="rc-val unrated">Unrated</span><span class="rc-votes">Be first!</span>`;
   const tags = (item.tags || []).slice(0, 2).map(t => `<span class="tag t-must">${t}</span>`).join('');
@@ -840,7 +853,7 @@ function showVoteModal(item) {
   document.getElementById('vote-item-name').textContent = item.name_en;
   document.getElementById('vote-item-jp').textContent = item.name_jp;
   const scoreEl = document.getElementById('vote-current-score');
-  scoreEl.textContent = item.vote_count > 0 ? `Community score: ${parseFloat(item.score_avg).toFixed(1)}/10 (${item.vote_count} votes)` : 'No votes yet — be the first!';
+  scoreEl.textContent = item.vote_count >= 5 ? `Community score: ${parseFloat(item.score_avg).toFixed(1)}/10 (${item.vote_count} votes)` : 'No votes yet — be the first!';
   document.querySelectorAll('.vote-star').forEach(s => s.classList.remove('lit'));
   const btn = document.getElementById('vote-submit-btn');
   btn.disabled = true;
