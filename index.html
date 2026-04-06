@@ -899,17 +899,29 @@ async function submitVote() {
   btn.disabled = true;
   btn.textContent = 'Saving...';
   const fingerprint = currentUser.id;
-  const { error } = await sb.from('votes').upsert({
-    item_id: currentVoteItem.id,
-    user_fingerprint: fingerprint,
-    score: selectedStarScore
-  }, { onConflict: 'item_id,user_fingerprint', ignoreDuplicates: false });
+  // Check if user already voted on this item
+  const { data: existing } = await sb.from('votes')
+    .select('id')
+    .eq('item_id', currentVoteItem.id)
+    .eq('user_fingerprint', fingerprint)
+    .single();
+
+  let error;
+  if (existing) {
+    // Update existing vote
+    const { error: updateError } = await sb.from('votes')
+      .update({ score: selectedStarScore })
+      .eq('id', existing.id);
+    error = updateError;
+  } else {
+    // Insert new vote
+    const { error: insertError } = await sb.from('votes')
+      .insert({ item_id: currentVoteItem.id, user_fingerprint: fingerprint, score: selectedStarScore });
+    error = insertError;
+  }
+
   if (error) {
-    if (error.code === '23505') {
-      showToast("You've already voted on this one! 🗳️");
-    } else {
-      showToast('Something went wrong. Try again.');
-    }
+    showToast('Something went wrong. Try again.');
     btn.disabled = false;
     btn.textContent = `Submit rating: ${selectedStarScore}/10`;
     return;
