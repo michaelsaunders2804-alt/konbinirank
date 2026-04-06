@@ -900,13 +900,16 @@ async function submitVote() {
   btn.textContent = 'Saving...';
   const fingerprint = currentUser.id;
   // Check if user already voted on this item
-  const { data: existingRows } = await sb.from('votes')
+  const { data: existingRows, error: selectError } = await sb.from('votes')
     .select('id')
     .eq('item_id', currentVoteItem.id)
     .eq('user_fingerprint', fingerprint)
     .limit(1);
 
+  console.log('Vote check:', { existingRows, selectError, fingerprint, item_id: currentVoteItem.id });
+
   const existing = existingRows && existingRows.length > 0 ? existingRows[0] : null;
+  console.log('Existing vote:', existing);
 
   let error;
   if (existing) {
