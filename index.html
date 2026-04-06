@@ -497,6 +497,7 @@ body { background:var(--bg); font-family:'DM Sans',sans-serif; color:var(--ink);
     <div class="vote-item-name" id="vote-item-name">Rate this item</div>
     <div class="vote-item-jp" id="vote-item-jp"></div>
     <div id="vote-current-score" class="vote-current"></div>
+    <div id="already-voted-msg" style="display:none;background:#FFF3CD;color:#856404;font-size:12px;font-weight:700;padding:8px 14px;border-radius:10px;margin-bottom:8px;text-align:center;">⭐ You've already rated this — tap a star to update your vote</div>
     <div class="vote-stars-wrap" id="vote-stars">
       <span class="vote-star" onclick="selectStar(1)">★</span>
       <span class="vote-star" onclick="selectStar(2)">★</span>
@@ -858,6 +859,22 @@ function showVoteModal(item) {
   const btn = document.getElementById('vote-submit-btn');
   btn.disabled = true;
   btn.textContent = 'Tap a star to rate';
+  // Check if user already voted on this item
+  const alreadyVotedMsg = document.getElementById('already-voted-msg');
+  const fp = localStorage.getItem('kr_fp');
+  if (fp) {
+    const key = `voted_${item.id}_${fp}`;
+    const prevScore = localStorage.getItem(key);
+    if (prevScore) {
+      alreadyVotedMsg.style.display = 'block';
+      alreadyVotedMsg.textContent = `⭐ You rated this ${prevScore}/10 — tap a star to update`;
+      document.querySelectorAll('.vote-star').forEach((s, i) => s.classList.toggle('lit', i < parseInt(prevScore)));
+    } else {
+      alreadyVotedMsg.style.display = 'none';
+    }
+  } else {
+    alreadyVotedMsg.style.display = 'none';
+  }
   showModal('vote-modal');
   gtag('event', 'view_item', { item_name: item.name_en });
 }
@@ -894,6 +911,8 @@ async function submitVote() {
     return;
   }
   showToast(`Voted ${selectedStarScore}/10 for ${currentVoteItem.name_en}! 🎉`);
+  const fp2 = localStorage.getItem('kr_fp');
+  if (fp2) localStorage.setItem(`voted_${currentVoteItem.id}_${fp2}`, selectedStarScore);
   gtag('event', 'vote', { item_name: currentVoteItem.name_en, score: selectedStarScore });
   hideModal('vote-modal');
   await loadItems();
