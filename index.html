@@ -903,9 +903,13 @@ async function submitVote() {
     item_id: currentVoteItem.id,
     user_fingerprint: fingerprint,
     score: selectedStarScore
-  }, { onConflict: 'item_id,user_fingerprint' });
+  }, { onConflict: 'item_id,user_fingerprint', ignoreDuplicates: false });
   if (error) {
-    showToast('Something went wrong. Try again.');
+    if (error.code === '23505') {
+      showToast("You've already voted on this one! 🗳️");
+    } else {
+      showToast('Something went wrong. Try again.');
+    }
     btn.disabled = false;
     btn.textContent = `Submit rating: ${selectedStarScore}/10`;
     return;
