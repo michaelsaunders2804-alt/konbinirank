@@ -931,7 +931,7 @@ async function submitVote() {
     btn.textContent = `Submit rating: ${selectedStarScore}/10`;
     return;
   }
-  showToast(existing ? `Updated to ${selectedStarScore}/10 — nice taste! 👍` : `Voted ${selectedStarScore}/10 for ${currentVoteItem.name_en}! 🎉`);
+  showToast(existing ? `Vote updated to ${selectedStarScore}/10` : `Voted ${selectedStarScore}/10 for ${currentVoteItem.name_en}! 🎉`);
   const fp2 = localStorage.getItem('kr_fp');
   if (fp2) localStorage.setItem(`voted_${currentVoteItem.id}_${fp2}`, selectedStarScore);
   gtag('event', 'vote', { item_name: currentVoteItem.name_en, score: selectedStarScore });
